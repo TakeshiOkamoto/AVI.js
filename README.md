@@ -1,3 +1,8 @@
+# AVI.js  
+  
+Creates movies of AVI files from multiple image files and audio files.  
+( 複数の画像ファイル、音声ファイルからAVIファイルの動画を作成します。 )
+  
 # DEMO
     
 (Japanese | 日本語)    
