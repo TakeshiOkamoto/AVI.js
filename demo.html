@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="AVI.js"></script>
+<script>
+var src_canvas,src_ctx; 
+var tmp_canvas,tmp_ctx; 
+var src_img;
+
+var icnt = 0,wcnt =0;
+
+// [Changeable] ※変更可能
+var fps = 1; // frames per second. If 60fps, write 60.
+var width = 320, height = 180; // 16:9 or 4:3 is recommended 
+
+var AVI = new TAVIWriter(width,height,fps);
+
+window.onload = function(){
+  src_canvas = document.getElementById("SrcCanvas");
+  src_ctx = src_canvas.getContext("2d");    
+  
+  tmp_canvas = document.getElementById("TmpCanvas");
+  tmp_ctx = tmp_canvas.getContext("2d");
+  
+  src_img = document.getElementById("SrcImage");    
+}
+
+function resize(){
+  if(src_canvas.width == width && src_canvas.height == height) return;
+  
+  tmp_canvas.width  = src_canvas.width; 
+  tmp_canvas.height = src_canvas.height; 
+  tmp_ctx.drawImage(src_canvas,0,0); 
+
+  src_canvas.width = width;
+  src_canvas.height = height;
+  src_ctx.drawImage(tmp_canvas,0,0,width,height);  
+}
+
+function onDragOver(event){ 
+  event.preventDefault(); 
+} 
+  
+function onDrop(event){
+  onAddFile(event);
+  event.preventDefault(); 
+}  
+
+function onAddFile(event) {
+  var files;
+  var errflg = false;
+  var reader = new FileReader();
+  
+  if(event.target.files){
+    files = event.target.files;
+  }else{ 
+    files = event.dataTransfer.files;   
+  }    
+
+  if(!files[0]) return;
+  
+  // ext
+  filename = files[0].name;
+  var ext = filename.split('.');
+  ext = ext[ext.length-1].toUpperCase();
+   
+  // sound
+  if(ext == "WAV"){
+    reader.onload = function (event) {    
+      try{
+        // add
+        AVI.addWaveFile(new Uint8Array(reader.result));
+        
+        wcnt = 1;
+        document.getElementById("msg1").innerHTML = "Images : " + icnt + " Sound : " + wcnt;  
+        document.getElementById("msg2").innerHTML = "Sound time : " + AVI.WaveFile.time / 1000 + "s";      
+      }catch(e){
+        alert(e);
+      }      
+    };
+    
+    if (files[0]){    
+      reader.readAsArrayBuffer(files[0]); 
+    }
+  
+  // image file  
+  }else{    
+    reader.onload = function (event) {      
+      src_img.onload = function (){     
+        
+        // draw
+        src_canvas.width  = src_img.width;
+        src_canvas.height = src_img.height;
+        src_ctx.drawImage(src_img,0,0);     
+        
+        // resize
+        resize();
+        
+        // raw      
+        var src = src_ctx.getImageData(0, 0, src_canvas.width, src_canvas.height);
+        
+        // add
+        try{        
+          AVI.addImage(src.data);
+          
+          icnt++;
+          document.getElementById("msg1").innerHTML = "Images : " + icnt + " Sound : " + wcnt;
+        }catch(e){
+          alert(e);
+        }
+      };      
+         
+      src_img.onerror  = function (){
+        alert('This file can not be read.');  
+      };
+
+      src_img.src = reader.result;
+    };
+    
+    if (files[0]){    
+      reader.readAsDataURL(files[0]); 
+    }
+  }
+  
+  // clear
+  document.getElementById("inputImages").value = '';
+  document.getElementById("inputWave").value = '';  
+}      
+
+function init(){
+  AVI = new TAVIWriter(width,height,fps);
+  document.getElementById("inputImages").value = '';
+  document.getElementById("inputWave").value = '';
+  document.getElementById("msg1").innerHTML=""; 
+  document.getElementById("msg2").innerHTML=""; 
+  icnt =0; wcnt =0;
+}
+
+function run(){
+  try{  
+    AVI.SaveToFile("test.avi");
+  }catch(e){
+    alert(e);
+  }  
+} 
+</script>
+</head>
+<body ondrop="onDrop(event);" ondragover="onDragOver(event);"> 
+  <p id="msg1"></p>
+  <p id="msg2"></p>
+  <table>
+   <tr><th>Add Image Files</th><td><input type="file" id="inputImages"  accept="image/jpeg,image/png,image/gif,image/bmp,image/x-icon" onchange="onAddFile(event);"></td></tr>
+   <tr><th>Add Wave File</th><td><input type="file"  id="inputWave" accept="audio/wav" onchange="onAddFile(event);"></td></tr>
+  </table>
+  <p></p>
+  <button onclick="run();">DownLoad</button> 
+  <button onclick="init();">Clear</button>
+  <canvas id="SrcCanvas" style="display:none;"></canvas>
+  <canvas id="TmpCanvas" style="display:none;"></canvas>
+  <img id="SrcImage" style="display:none;">
+</body>
+</html> 
