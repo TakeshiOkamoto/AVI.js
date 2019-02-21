@@ -3,12 +3,12 @@
 Creates movies of AVI files from multiple image files and audio files.  
 ( 複数の画像ファイル、音声ファイルからAVIファイルの動画を作成します。 )
   
-# DEMO
+### DEMO
     
 (Japanese | 日本語)    
 [https://www.petitmonte.com/labo/avi-maker/](https://www.petitmonte.com/labo/avi-maker/)  
   
-# About reproduction of AVI ( AVIファイルの再生について )  
+### About reproduction of AVI ( AVIファイルの再生について )  
   
 Untranslated  
   
@@ -23,7 +23,7 @@ Windows10でAVIファイルを開くと自動的に「映画 & テレビ」で�
 Right click on AVI file and play it with Windows Live Movie Maker.   
 ( AVIファイルを右クリックして、Windows Live Movie Makerで再生します。 ) 
   
-# Other ( その他 ) 
+### Other ( その他 ) 
   
 Untranslated  
   
@@ -33,5 +33,5 @@ Untranslated
   
 demo.aviはdemo1.jpgを6枚、demo2.jpgを3枚、demo3.jpgを2枚で計11枚使用しています。demo.htmlのFPSが1(1秒に1枚)なので11秒の動画になります。音声は10.496秒です。 
   
-# Licence
+### Licence
 MIT license  
